@@ -53,6 +53,7 @@
     "@reduxjs/toolkit": "^1.9.5",
     "@types/prop-types": "^15.7.5",
     "d3-state-visualizer": "^2.0.0",
+    "fuzzysort": "^2.0.4",
     "javascript-stringify": "^2.1.0",
     "jsan": "^3.1.14",
     "jsondiffpatch": "^0.4.1",
