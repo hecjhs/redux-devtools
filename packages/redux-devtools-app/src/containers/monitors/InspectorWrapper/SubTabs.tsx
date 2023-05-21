@@ -14,7 +14,6 @@ import ChartTab from './ChartTab';
 import VisualDiffTab from './VisualDiffTab';
 import { StoreState } from '../../../reducers';
 import { Delta } from 'jsondiffpatch';
-import dv from './data';
 
 type StateProps = ReturnType<typeof mapStateToProps>;
 type DispatchProps = ResolveThunks<typeof actionCreators>;
@@ -40,7 +39,7 @@ class SubTabs extends Component<Props> {
 
     switch (this.props.parentTab) {
       case 'Action':
-        return { data: dv }
+        return { data: this.props.action}
       case 'Diff':
         return { data: this.props.delta };
       default:

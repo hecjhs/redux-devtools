@@ -4,10 +4,13 @@ import styled from 'styled-components';
 import { Base16Theme } from 'base16';
 import { defaultStyle, themedStyle } from './styles';
 import { Theme } from '../themes/default';
-import { keymap, EditorView } from "@codemirror/view"
+import { basicSetup, EditorView } from 'codemirror';
+import { keymap } from "@codemirror/view"
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
 import { search, searchKeymap } from "@codemirror/search"
-import doc from './data';
+import { EditorState } from "@codemirror/state";
+
+// import doc from './data';
 
 const EditorContainer = styled.div(
   '' as unknown as TemplateStringsArray,
@@ -37,57 +40,47 @@ export default class Editor extends Component<EditorProps> {
   node?: HTMLDivElement | null;
 
   componentDidMount() {
+    const cmState = EditorState.create(
+      {
+        doc: "",
+        extensions: [
+          basicSetup,
+          history(),
+          search(),
+          keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
+        ],
+      }
+    );
     this.cm = new EditorView({
-      doc,
-      extensions: [
-        history(),
-        search(),
-        keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
-      ],
+      state: cmState,
       // @ts-ignore i don't know what to do
       parent: document.getElementById("editor")
     })
   }
 
-  // UNSAFE_componentWillReceiveProps(nextProps: EditorProps) {
-  //   // const data = this.props.value;
-  //   // const state = EditorState.create()
-  //   // state.update()
-  //   // // const initialState = cmlib.EditorView.crea createEditorState("function foo() {\n    console.log(123);\n}");
-  //   // // @ts-ignore i don't know what to do
-  //   // this.cm.setState(state);
-
-
-  //   // this.cm.setState(nextProps.value);
-
-  //   // if (nextProps.value !== this.cm.getValue()) {
-  //   // }
-  //   // if (nextProps.readOnly !== this.props.readOnly) {
-  //   //   this.cm.setOption('readOnly', nextProps.readOnly);
-  //   // }
-  //   // if (nextProps.lineNumbers !== this.props.lineNumbers) {
-  //   //   this.cm.setOption('lineNumbers', nextProps.lineNumbers);
-  //   // }
-  //   // if (nextProps.lineWrapping !== this.props.lineWrapping) {
-  //   //   this.cm.setOption('lineWrapping', nextProps.lineWrapping);
-  //   // }
-  //   // if (nextProps.foldGutter !== this.props.foldGutter) {
-  //   //   this.cm.setOption('foldGutter', nextProps.foldGutter);
-  //   // }
-  //   // this.cm.setOption('searchKeymap', {
-  //   //   createPanel: true,
-  //   //   openSearchPanel: 'Mod-b'
-  //   // });
-  // }
+  UNSAFE_componentWillReceiveProps(nextProps: EditorProps) {
+    // @ts-ignore ignoring this for now
+    this.cm.setState(
+      EditorState.create({
+        doc: nextProps.value,
+        extensions: [
+          basicSetup,
+          history(),
+          search(),
+          keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
+        ],
+      })
+    )
+  }
 
   shouldComponentUpdate() {
     return false;
   }
 
   componentWillUnmount() {
-    // const node = this.node!;
-    // node.removeChild(node.children[0]);
-    // this.cm = null;
+    const node = this.node!;
+    node.removeChild(node.children[0]);
+    this.cm = null;
   }
 
   getRef: React.RefCallback<HTMLDivElement> = (node) => {
